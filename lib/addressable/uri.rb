@@ -2200,6 +2200,28 @@ module Addressable
       return nil
     end
 
+    ##
+    # Decodes URI to unicode, including hostname convertation from punycode.
+    # This method in somewhat reverse to normalize.
+    def to_unicode
+      return Addressable::URI.new(
+        :scheme => Addressable::URI.unencode_component(self.scheme),
+        :user => Addressable::URI.unencode_component(self.user),
+        :password => Addressable::URI.unencode_component(self.password),
+        :host => ::Addressable::IDNA.to_unicode(self.host),
+        :port => self.port,
+        :path => Addressable::URI.unencode_component(self.path),
+        :query => Addressable::URI.unencode_component(self.query),
+        :fragment => Addressable::URI.unencode_component(self.fragment)
+      )
+    end
+
+    ##
+    # Destructive form of to_unicode method
+    def to_unicode!
+      replace_self(self.to_unicode)
+    end
+
   private
     SELF_REF = '.'
     PARENT = '..'
